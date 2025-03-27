@@ -1,9 +1,0 @@
-- MCP demo video (10s - 1min)
-- Wishes
-    - 把 app real time stream 串起來
-    - 錄一個像 Blender 3D 用的那種影片，宣傳永豐金很先進這樣
-
-- Demo procedure
-    - 1. 我要買永豐金 (2890) 一張 23.00 元
-    - 2. 我要買台積電 一張 980.00 元 (沒有提供股票代碼)
-    - 3. 我要買台積電
