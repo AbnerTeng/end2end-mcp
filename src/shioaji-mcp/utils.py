@@ -6,12 +6,7 @@ from shioaji.constant import (
 )
 
 
-def place_long_order(
-    api: sj.Shioaji,
-    stock_id: str,
-    price: float,
-    quantity: int
-):
+def place_long_order(api: sj.Shioaji, stock_id: str, price: float, quantity: int):
     contract = api.Contracts.Stocks.TSE[stock_id]
 
     order = api.Order(
@@ -20,7 +15,7 @@ def place_long_order(
         action=Action.Buy,
         price_type=StockPriceType.LMT,
         order_type=OrderType.ROD,
-        account=api.stock_account
+        account=api.stock_account,
     )
     trade = api.place_order(contract, order)
     api.update_status()
