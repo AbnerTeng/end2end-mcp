@@ -28,8 +28,6 @@ class MCPClient:
         self.session = None
         self.exit_stack = AsyncExitStack()
         self.client = OpenAI(
-            # base_url="https://ycden-ollama.ngrok.app/v1",
-            # api_key="ollama",
             api_key=os.getenv("OPENAI_API_KEY"),
             base_url="https://api.openai.com/v1",
         )

@@ -4,22 +4,46 @@ An MCP (Model Context Protocol) server for Shioaji api.
 
 ## Prerequisites
 
-Make sure you have `uv` installed.
+1. Make sure you have `uv` installed.
 
 ```bash
-uv init && uv venv
+uv venv
 
 source .venv/bin/activate
 
 uv sync
 ```
 
-## Usage
 
-Check mcp server can be run properly.
+2. Install Claude Desktop App
+
+## Generate config files for Claude Desktop App
 
 ```bash
-mcp dev server.py
+# MacOS
+
+~/Library/Application Support/Claude/claude_desktop_config.json
+
+# Windows
+
+%APPDATA%\Claude\claude_desktop_config.json
 ```
 
-If you've checked, then proceed to the build this server on any MCP host.
+Inside the `.json` file, write the execution config for Claude Desktop to recognize
+
+```json
+{
+  "mcpServers": {
+    "filesystem": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "/Users/username/Desktop",
+        "/Users/username/Downloads"
+      ]
+    }
+  }
+}
+```
+```
