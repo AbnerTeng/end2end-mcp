@@ -8,6 +8,18 @@ import utils
 
 mcp = FastMCP("ibranch")
 
+@mcp.tool()
+def get_info_by_id(id: str) -> str:
+    """以身分證字號取得其個人資料
+
+    Args:
+        id: 客戶身分證字號
+    """
+    customers = json.load(open(CUSTOMERS_FILE, "r"))
+    for k, v in customers.items():
+        if v["id"] == id:
+            return f"姓名: {v['name']}, 電話: {v['phone']}"
+    return "查無此人"
 
 @mcp.tool()
 def new_deposit_form(account_number: str, name: str, amount: int, applicant_id: str, notes: str | None = None) -> dict:
@@ -54,6 +66,47 @@ def get_filled_formats(applicant_id: str) -> str:
                 continue
             render += f"\t{k}: {v}\n"
     return render
+
+@mcp.prompt("negg: iBranch 預填表單服務")
+def init_service() -> str:
+    prompt = """
+這是一個可以預填存款單、提款單、轉帳單、匯款單的服務。
+首先是身分認證的環節，
+請先向申請者詢問身分證字號，接著查詢他的姓名及帳戶列表，提供給申請者做核對。
+然後是提供服務的環節，
+請先詢問使用者今天需要的服務。
+接著尋找他是否有已經填到一半的表單，將已儲存表單提供給他做參考。
+最後根據表單上的必填欄位及選填欄位，以對話的方式幫助申請者填完表單。
+切記，**不能**將欄位條列出來請申請者逐項回答，要用聊天的方式聊出答案
+"""
+    return prompt
+
+@mcp.resource("ibranch://deposit/{applicant_id}")
+def filled_forms(applicant_id: str) -> list[dict]:
+    """以申請人身分證字號取得此人已預填的所有表單"""
+    file_list = sorted(FORMS_DIR.glob(f'{applicant_id}_*.json'))
+    form_list = []
+    for file in file_list:
+        form_list.append(json.dumps(json.load(open(file, "r"))))
+    return form_list
+
+@mcp.resource("ibranch://deposit/")
+def filled_forms() -> list[dict]:
+    """所有預填表單"""
+    file_list = sorted(FORMS_DIR.glob('*.json'))
+    form_list = []
+    for file in file_list:
+        form_list.append(json.dumps(json.load(open(file, "r"))))
+    return form_list
+
+@mcp.resource("echo://static")
+def echo_resource() -> str:
+    return "Echo!"
+
+@mcp.resource("echo://{text}")
+def echo_template(text: str) -> str:
+    """Echo the input text"""
+    return f"Echo: {text}"
 
 if __name__ == "__main__":
     mcp.run(transport="stdio")
