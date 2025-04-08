@@ -6,47 +6,56 @@ from agents import (
     Agent,
     Runner,
     trace,
+    gen_trace_id,
     set_default_openai_key,
 )
-from agents.mcp import MCPServer, MCPServerStdio
+from agents.mcp import MCPServerStdio
 from dotenv import load_dotenv
 
 
-load_dotenv('.env')
+load_dotenv(".env")
 set_default_openai_key(os.getenv("OPENAI_API_KEY"))
 
 
-async def run(
-    mcp_server: MCPServer,
-    dir_path: str
-) -> None:
-    agent = Agent(
-        name="Trade Assistant",
-        instructions=f"Please analyze the CSV file in {dir_path} and place trade positions. You must trade with the price and quantity that you've analyzed",
-        model="gpt-4o",
-        mcp_servers=[mcp_server],
-    )
-    message = "Please analyze the csv file and place trade positions"
-    result = await Runner.run(starting_agent=agent, input=message)
-
-    print(f"Result: {result.final_output}")
-
-
 async def main():
-    dir_path = input("Please enter the directory path: ")
-
-    async with MCPServerStdio(
+    shioaji_server = MCPServerStdio(
+        name="Shioaji",
         cache_tools_list=True,
         params={
             "command": "/Users/abnerteng/.local/bin/uv",
-            "args": [
-                "run",
-                "src/shioaji-mcp-openai/server.py"
-            ]
-        }
-    ) as server:
-        with trace(workflow_name="MCP Shioaji Workflow"):
-            await run(server, dir_path)
+            "args": ["run", "src/shioaji-mcp-openai/server.py"],
+        },
+    )
+    weather_server = MCPServerStdio(
+        name="weather",
+        cache_tools_list=True,
+        params={
+            "command": "/Users/abnerteng/.local/bin/uv",
+            "args": ["run", "src/weather-server/tool.py"],
+        },
+    )
+
+    async with shioaji_server as ss, weather_server as ws:
+        trace_id = gen_trace_id()
+        print(f"View trace: https://platform.openai.com/traces/{trace_id}\n")
+
+        with trace(workflow_name="Multi-MCP Server Workflow", trace_id=trace_id):
+            agent = Agent(
+                name="MCP Assistant",
+                instructions=f"Use the tools to analyze csv and trade or show weather information",
+                model="gpt-4o",
+                mcp_servers=[ss, ws],
+            )
+            while True:
+                message = input(
+                    "Enter a prompt (MCP servers (ss, ws) are available): ")
+                if message.lower() == "exit":
+                    print("Exiting conversation")
+                    break
+
+                result = await Runner.run(starting_agent=agent, input=message)
+
+                print(f"Result: {result.final_output}")
 
 
 if __name__ == "__main__":
