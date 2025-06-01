@@ -1,6 +1,14 @@
-# Shioaji-MCP
+# end2end-mcp
 
-An MCP (Model Context Protocol) server for Shioaji api.
+An end-to-end example of building Model Context Protocol (MCP) clients and communicates between several MCP servers with OpenAI compatible APIs.
+
+## TL;DR
+
+You can run your MCP servers with a similar method as you run them with Claude Desktop App for just a simple command:
+
+```bash
+uv run python client/client.py
+```
 
 ## Prerequisites
 
@@ -14,36 +22,47 @@ source .venv/bin/activate
 uv sync
 ```
 
+## Brief Introduction
 
-2. Install Claude Desktop App
+### Example MCP servers
 
-## Generate config files for Claude Desktop App
+1. Shioaji: An example MCP server that provides basic stock trading functionalities using [Shioaji API](https://sinotrade.github.io/), you'll need further configuration to properly use it.
 
-```bash
-# MacOS
+2. Weather: Just a simple example from [MCP official doc](https://modelcontextprotocol.io/quickstart/server)
 
-~/Library/Application Support/Claude/claude_desktop_config.json
+### MCP host
 
-# Windows
+Instead of following the Claude API, I replace it with OpenAI compatible APIs, supporting two main LLM providers:
 
-%APPDATA%\Claude\claude_desktop_config.json
-```
+1. OpenAI
+2. Ollama
 
-Inside the `.json` file, write the execution config for Claude Desktop to recognize
+Where you can change between them by modifying the `LLM_PROVIDER` environment variable.
+
+### Connect with MCP host
+
+After choosing your LLM provider, you can connect servers with the MCP host by modifying the `config.json` file, just like the example below:
 
 ```json
 {
   "mcpServers": {
-    "filesystem": {
-      "command": "npx",
+    "weather": {
       "args": [
-        "-y",
-        "@modelcontextprotocol/server-filesystem",
-        "/Users/username/Desktop",
-        "/Users/username/Downloads"
-      ]
+        "--directory",
+        "root_path",
+        "run",
+        "server_file.py"
+      ],
+      "command": "uv_exec_command"
     }
   }
 }
 ```
+
+### Run MCP host
+
+You can run the MCP host with the following command:
+
+```bash
+uv run python client/client.py
 ```

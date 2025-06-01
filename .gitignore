@@ -1,6 +1,11 @@
+# env and configs
+
+config.json
+
 # redundant
 
 temp.py
+.vscode/
 
 # Notebook
 .ipynb_checkpoints
