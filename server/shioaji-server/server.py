@@ -5,12 +5,7 @@ import shioaji as sj
 import pandas as pd
 from mcp.server.fastmcp import FastMCP
 
-from config import (
-    API_KEY,
-    SECRET_KEY,
-    CA_CERT_PATH,
-    CA_PASSWORD
-)
+from config import API_KEY, SECRET_KEY, CA_CERT_PATH, CA_PASSWORD
 from parser import Parser
 from utils import place_long_order
 
@@ -30,9 +25,9 @@ def trader(trade_info: str) -> str:
 
 
 @mcp.tool()
-async def analyze_csv(csv_path: str) -> Dict[str, Tuple[float, int]]:
+async def analyze_csv(csv_path: str) -> Any:
     """
-    Analyze a CSB file containing stock trading info
+    Analyze a CSV file containing stock trading info
 
     Inputs:
         - csv_path: str
@@ -44,23 +39,20 @@ async def analyze_csv(csv_path: str) -> Dict[str, Tuple[float, int]]:
 
     try:
         data = pd.read_csv(csv_path)
+        if isinstance(data, pd.DataFrame):
+            data_dict = {
+                col: str(data[col].iloc[0]) + ", " + str(data[col].iloc[1])
+                for col in data.columns
+            }
+
+            return data_dict
 
     except Exception as e:
         return f"Error reading file: {e}"
 
-    data_dict = {
-        col: (data[col].iloc[0], data[col].iloc[1]) for col in data.columns
-    }
-
-    return data_dict
-
 
 @mcp.tool()
-async def trade(
-    stock_id: int,
-    price: float,
-    quantity: int
-) -> Tuple[Dict[str, Any], ...]:
+async def trade(stock_id: int, price: float, quantity: int):
     """
     Place a long order for a stock_id at a specific price and quantity
 
@@ -78,10 +70,8 @@ async def trade(
         secret_key=SECRET_KEY,
     )
     print(f"Available account: {account}")
-    api.activate_ca(
-        ca_path=CA_CERT_PATH,
-        ca_passwd=CA_PASSWORD
-    )
+
+    api.activate_ca(ca_path=CA_CERT_PATH, ca_passwd=CA_PASSWORD)
     if isinstance(stock_id, int):
         stock_id_str = str(stock_id)
 
@@ -96,7 +86,8 @@ async def trade(
     logger.info(f"Contract: {contract}")
     logger.info(f"Status: {status}")
 
-    return contract, status
+    # return contract, status
+    return status
 
 
 if __name__ == "__main__":

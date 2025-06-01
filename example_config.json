@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "weather": {
+      "args": [
+        "--directory",
+        "/Users/abnerteng/git/end2end-mcp/server/",
+        "run",
+        "weather-server/tool.py"
+      ],
+      "command": "/Users/abnerteng/.local/bin/uv"
+    }
+  }
+}
