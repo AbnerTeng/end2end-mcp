@@ -2,6 +2,8 @@
 
 An end-to-end example of building Model Context Protocol (MCP) clients and communicates between several MCP servers with OpenAI compatible APIs.
 
+![image](asset/screen_record.gif)
+
 ## TL;DR
 
 You can run your MCP servers with a similar method as you run them with Claude Desktop App for just a simple command:
@@ -27,7 +29,6 @@ uv sync
 ### Example MCP servers
 
 1. Shioaji: An example MCP server that provides basic stock trading functionalities using [Shioaji API](https://sinotrade.github.io/), you'll need further configuration to properly use it.
-
 2. Weather: Just a simple example from [MCP official doc](https://modelcontextprotocol.io/quickstart/server)
 
 ### MCP host
@@ -66,3 +67,5 @@ You can run the MCP host with the following command:
 ```bash
 uv run python client/client.py
 ```
+
+After finishing playing with the MCP host, you can just type `exit` to leave
