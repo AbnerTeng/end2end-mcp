@@ -69,3 +69,5 @@ uv run python client/client.py
 ```
 
 After finishing playing with the MCP host, you can just type `exit` to leave
+
+> The **shioaji-server** in `server/` is certified by MCP Review. The [mcp review link](https://mcpreview.com/mcp-servers/AbnerTeng/shioaji-mcp)
